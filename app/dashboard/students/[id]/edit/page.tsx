@@ -1,12 +1,8 @@
-import StudentForm from "@/components/StudentForm";
-import { updateStudentAction, getStudent } from "@/lib/actions";
+import { getStudent, updateStudentAction } from "@/lib/actions";
 import { notFound } from "next/navigation";
+import StudentForm from "@/components/StudentForm";
 
-export default async function EditStudentPage({
-    params,
-}: {
-    params: Promise<{ id: string }>;
-}) {
+export default async function EditStudentPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const student = await getStudent(id);
 
@@ -14,13 +10,16 @@ export default async function EditStudentPage({
         notFound();
     }
 
-    const updateAction = updateStudentAction.bind(null, student.id);
+    const updateAction = async (formData: FormData) => {
+        'use server';
+        await updateStudentAction(id, formData);
+    };
 
     return (
         <StudentForm
-            title="Edit Data Siswa"
             initialData={student}
             action={updateAction}
+            title="Edit Data Siswa"
         />
     );
 }

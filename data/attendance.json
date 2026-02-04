@@ -1,0 +1,74 @@
+[
+  {
+    "id": "1",
+    "studentId": "d1e8f3a2-4b5c-6d7e-8f9a-0b1c2d3e4f5a",
+    "date": "2026-02-05",
+    "status": "Hadir",
+    "time": "07:15",
+    "notes": ""
+  },
+  {
+    "id": "2",
+    "studentId": "02062bc3-dbd0-4431-b019-d1bca06f0b92",
+    "date": "2026-02-05",
+    "status": "Hadir",
+    "time": "07:20",
+    "notes": ""
+  },
+  {
+    "id": "3dde6102-75a3-4957-9390-f7ac0074ec3f",
+    "studentId": "f05b08c9-3a59-4eb4-ac78-990f46d62401",
+    "date": "2026-02-04",
+    "status": "Izin",
+    "time": "00.12"
+  },
+  {
+    "id": "9a13885a-5aec-475c-82af-fee2cec87c1c",
+    "studentId": "5c7c48fd-7337-40f9-9c56-0e18786acc0e",
+    "date": "2026-02-04",
+    "status": "Sakit",
+    "time": "00.49"
+  },
+  {
+    "id": "904bc3c9-0b77-4a3d-b7f8-9523494e930f",
+    "studentId": "5c7c48fd-7337-40f9-9c56-0e18786acc0e",
+    "date": "2026-02-04",
+    "status": "Hadir",
+    "time": "00.50"
+  },
+  {
+    "id": "23a34bbd-f483-4d38-b32a-91283f4ceb89",
+    "studentId": "5c7c48fd-7337-40f9-9c56-0e18786acc0e",
+    "date": "2026-02-04",
+    "status": "Hadir",
+    "time": "00.50"
+  },
+  {
+    "id": "8a715685-89a7-4ab1-8568-423e124be0c9",
+    "studentId": "02062bc3-dbd0-4431-b019-d1bca06f0b92",
+    "date": "2026-02-04",
+    "status": "Hadir",
+    "time": "00.52"
+  },
+  {
+    "id": "b379ecd8-aa61-4bd3-8f2e-09d176986ea7",
+    "studentId": "02062bc3-dbd0-4431-b019-d1bca06f0b92",
+    "date": "2026-02-04",
+    "status": "Hadir",
+    "time": "00.52"
+  },
+  {
+    "id": "fdba8958-9839-40f9-8d45-4bdf74bcca39",
+    "studentId": "02062bc3-dbd0-4431-b019-d1bca06f0b92",
+    "date": "2026-02-04",
+    "status": "Hadir",
+    "time": "00.52"
+  },
+  {
+    "id": "4f1eaa20-cf09-44e8-be0a-932dd6572a24",
+    "studentId": "02062bc3-dbd0-4431-b019-d1bca06f0b92",
+    "date": "2026-02-04",
+    "status": "Hadir",
+    "time": "00.53"
+  }
+]

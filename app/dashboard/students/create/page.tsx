@@ -1,11 +1,11 @@
-import StudentForm from "@/components/StudentForm";
 import { createStudentAction } from "@/lib/actions";
+import StudentForm from "@/components/StudentForm";
 
 export default function CreateStudentPage() {
     return (
         <StudentForm
-            title="Tambah Siswa Baru"
             action={createStudentAction}
+            title="Tambah Siswa Baru"
         />
     );
 }

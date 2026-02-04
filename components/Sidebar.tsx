@@ -4,27 +4,34 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
     LayoutDashboard,
-    Database,
     Users,
-    UserCheck,
-    ClipboardList,
     GraduationCap,
+    School,
+    ClipboardList,
     Briefcase,
-    Building2,
+    Package,
     Settings,
-    LogOut,
     ChevronDown,
     ChevronRight,
+    BookOpen,
+    UserPlus,
+    FileSpreadsheet,
+    FileCheck,
+    CalendarDays,
+    Wrench,
+    Monitor,
     FileText,
+    Building2,
+    MapPin,
+    ClipboardCheck,
+    QrCode,
+    Database,
+    DoorOpen,
     Import,
     Upload,
     History,
-    BookOpen,
-    School,
-    CalendarDays,
-    DoorOpen,
-    Wrench,
-    Monitor
+    UserCheck,
+    LogOut
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -82,6 +89,7 @@ const MENU_ITEMS: MenuItem[] = [
         name: 'Sistem Absensi',
         icon: ClipboardList,
         submenu: [
+            { name: 'Scan QR Absensi', href: '/dashboard/attendance/scan', icon: QrCode },
             { name: 'Presensi Harian', href: '/dashboard/attendance/daily', icon: CalendarDays },
             { name: 'Presensi Praktik', href: '/dashboard/attendance/practical', icon: Wrench },
             { name: 'Monitoring PKL', href: '/dashboard/attendance/internship', icon: Monitor },

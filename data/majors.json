@@ -1,32 +1,32 @@
 [
-    {
-        "id": "1",
-        "code": "RPL",
-        "name": "Rekayasa Perangkat Lunak",
-        "description": "Program keahlian yang mempelajari pengembangan software dan aplikasi"
-    },
-    {
-        "id": "2",
-        "code": "TKJ",
-        "name": "Teknik Komputer & Jaringan",
-        "description": "Program keahlian yang mempelajari instalasi, konfigurasi, dan maintenance jaringan komputer"
-    },
-    {
-        "id": "3",
-        "code": "DKV",
-        "name": "Desain Komunikasi Visual",
-        "description": "Program keahlian yang mempelajari desain grafis dan multimedia"
-    },
-    {
-        "id": "4",
-        "code": "AK",
-        "name": "Akuntansi",
-        "description": "Program keahlian yang mempelajari pencatatan dan pelaporan keuangan"
-    },
-    {
-        "id": "5",
-        "code": "OTKP",
-        "name": "Otomatisasi Tata Kelola Perkantoran",
-        "description": "Program keahlian yang mempelajari administrasi perkantoran modern"
-    }
+  {
+    "id": "1",
+    "code": "RPL",
+    "name": "Rekayasa Perangkat Lunak",
+    "description": "Program keahlian yang mempelajari pengembangan software dan aplikasi"
+  },
+  {
+    "id": "2",
+    "code": "TKJ",
+    "name": "Teknik Komputer & Jaringan",
+    "description": "Program keahlian yang mempelajari instalasi, konfigurasi, dan maintenance jaringan komputer"
+  },
+  {
+    "id": "3",
+    "code": "DKV",
+    "name": "Desain Komunikasi Visual",
+    "description": "Program keahlian yang mempelajari desain grafis dan multimedia"
+  },
+  {
+    "id": "4",
+    "code": "AK",
+    "name": "Akuntansi",
+    "description": "Program keahlian yang mempelajari pencatatan dan pelaporan keuangan"
+  },
+  {
+    "id": "5",
+    "code": "OTKP",
+    "name": "Otomatisasi Tata Kelola Perkantoran",
+    "description": "Program keahlian yang mempelajari administrasi perkantoran modern"
+  }
 ]
