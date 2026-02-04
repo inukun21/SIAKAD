@@ -57,7 +57,7 @@ export default function QRScanner({ onScanSuccess, onScanError }: QRScannerProps
                     );
 
                     // Store the stream for cleanup
-                    if (videoRef.current.srcObject) {
+                    if (videoRef.current && videoRef.current.srcObject) {
                         streamRef.current = videoRef.current.srcObject as MediaStream;
                     }
                 }

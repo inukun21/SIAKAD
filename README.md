@@ -2,6 +2,14 @@
 
 Sistem Informasi Akademik berbasis web untuk Sekolah Menengah Kejuruan (SMK) yang dibangun dengan **Next.js 16**, **TypeScript**, dan **Tailwind CSS**.
 
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/inukun21/SIAKAD)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/inukun21/SIAKAD)
+[![License](https://img.shields.io/badge/license-Educational-orange.svg)](https://github.com/inukun21/SIAKAD)
+
+📋 **[View Changelog](CHANGELOG.md)** | 🚀 **[Live Demo](#)** | 📖 **[Documentation](#)**
+
+---
+
 ## ✨ Fitur Utama
 
 ### 📊 **Dashboard & Analytics**
