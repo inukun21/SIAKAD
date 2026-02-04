@@ -1,0 +1,23 @@
+[
+    {
+        "id": "1",
+        "code": "MTK",
+        "name": "Matematika",
+        "type": "Umum",
+        "credits": 4
+    },
+    {
+        "id": "2",
+        "code": "IND",
+        "name": "Bahasa Indonesia",
+        "type": "Umum",
+        "credits": 4
+    },
+    {
+        "id": "3",
+        "code": "PWPB",
+        "name": "Pemrograman Web & Perangkat Bergerak",
+        "type": "Produktif",
+        "credits": 8
+    }
+]

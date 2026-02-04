@@ -1,0 +1,26 @@
+[
+    {
+        "id": "1",
+        "code": "R101",
+        "name": "Ruang Kelas 101",
+        "type": "Kelas",
+        "capacity": 32,
+        "facilities": "Proyektor, AC, Whiteboard"
+    },
+    {
+        "id": "2",
+        "code": "LAB-RPL",
+        "name": "Lab Komputer RPL",
+        "type": "Laboratorium",
+        "capacity": 40,
+        "facilities": "40 PC, Proyektor, AC, Server"
+    },
+    {
+        "id": "3",
+        "code": "BENGKEL-TKJ",
+        "name": "Bengkel Jaringan",
+        "type": "Bengkel",
+        "capacity": 30,
+        "facilities": "Router, Switch, Kabel UTP, Tools"
+    }
+]

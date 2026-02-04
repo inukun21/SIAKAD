@@ -1,0 +1,26 @@
+[
+    {
+        "id": "1",
+        "name": "X RPL 1",
+        "majorId": "1",
+        "homeroom": "Budi Santoso, S.Pd",
+        "capacity": 32,
+        "academicYear": "2024/2025"
+    },
+    {
+        "id": "2",
+        "name": "X RPL 2",
+        "majorId": "1",
+        "homeroom": "Siti Aminah, S.Kom",
+        "capacity": 32,
+        "academicYear": "2024/2025"
+    },
+    {
+        "id": "3",
+        "name": "XI TKJ 1",
+        "majorId": "2",
+        "homeroom": "Ahmad Rizki, S.T",
+        "capacity": 30,
+        "academicYear": "2024/2025"
+    }
+]
