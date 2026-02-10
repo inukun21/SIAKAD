@@ -1,15 +1,16 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Calendar, CheckCircle, XCircle, AlertCircle, Clock, Users, RefreshCw } from 'lucide-react';
+import { Calendar, CheckCircle, XCircle, AlertCircle, Clock, Users, RefreshCw, BarChart3 } from 'lucide-react';
 import { getAllStudents } from '@/lib/actions';
-import { getAttendanceByDateAction, createAttendanceAction, updateAttendanceAction } from '@/lib/actions/attendance';
+import { getAttendanceByDateAction, getAllAttendance, createAttendanceAction, updateAttendanceAction } from '@/lib/actions/attendance';
 import { Student } from '@/lib/db';
 import { Attendance, AttendanceStatus } from '@/lib/db/attendance';
 
 export default function DailyAttendancePage() {
     const [students, setStudents] = useState<Student[]>([]);
     const [attendance, setAttendance] = useState<Attendance[]>([]);
+    const [allAttendance, setAllAttendance] = useState<Attendance[]>([]); // All attendance records
     const [selectedDate, setSelectedDate] = useState<string>(
         new Date().toISOString().split('T')[0]
     );
@@ -19,12 +20,14 @@ export default function DailyAttendancePage() {
 
     const loadData = useCallback(async () => {
         setLoading(true);
-        const [studentsData, attendanceData] = await Promise.all([
+        const [studentsData, attendanceData, allAttendanceData] = await Promise.all([
             getAllStudents(),
-            getAttendanceByDateAction(selectedDate)
+            getAttendanceByDateAction(selectedDate),
+            getAllAttendance() // Load all attendance for statistics
         ]);
         setStudents(studentsData);
         setAttendance(attendanceData);
+        setAllAttendance(allAttendanceData);
         setLastUpdate(new Date());
         setLoading(false);
     }, [selectedDate]);
@@ -73,6 +76,18 @@ export default function DailyAttendancePage() {
         return attendance.find(a => a.studentId === studentId);
     }, [attendance]);
 
+    // Calculate total attendance stats per student
+    const getStudentStats = useCallback((studentId: string) => {
+        const studentAttendances = allAttendance.filter(a => a.studentId === studentId);
+        const hadir = studentAttendances.filter(a => a.status === 'Hadir').length;
+        const sakit = studentAttendances.filter(a => a.status === 'Sakit').length;
+        const izin = studentAttendances.filter(a => a.status === 'Izin').length;
+        const alpa = studentAttendances.filter(a => a.status === 'Alpa').length;
+        const total = studentAttendances.length;
+
+        return { hadir, sakit, izin, alpa, total };
+    }, [allAttendance]);
+
     const stats = useMemo(() => {
         const total = students.length;
         const hadir = attendance.filter(a => a.status === 'Hadir').length;
@@ -81,8 +96,25 @@ export default function DailyAttendancePage() {
         const alpa = attendance.filter(a => a.status === 'Alpa').length;
         const belumAbsen = total - attendance.length;
 
-        return { total, hadir, sakit, izin, alpa, belumAbsen };
+        // Calculate percentages
+        const hadirPercent = total > 0 ? ((hadir / total) * 100).toFixed(1) : '0';
+        const sakitPercent = total > 0 ? ((sakit / total) * 100).toFixed(1) : '0';
+        const izinPercent = total > 0 ? ((izin / total) * 100).toFixed(1) : '0';
+        const alpaPercent = total > 0 ? ((alpa / total) * 100).toFixed(1) : '0';
+        const belumAbsenPercent = total > 0 ? ((belumAbsen / total) * 100).toFixed(1) : '0';
+        const sudahAbsenPercent = total > 0 ? (((total - belumAbsen) / total) * 100).toFixed(1) : '0';
+
+        return {
+            total, hadir, sakit, izin, alpa, belumAbsen,
+            hadirPercent, sakitPercent, izinPercent, alpaPercent, belumAbsenPercent, sudahAbsenPercent
+        };
     }, [students, attendance]);
+
+    // Check if selected date is today
+    const isToday = useMemo(() => {
+        const today = new Date().toISOString().split('T')[0];
+        return selectedDate === today;
+    }, [selectedDate]);
 
     const getStatusColor = (status: AttendanceStatus) => {
         switch (status) {
@@ -125,6 +157,20 @@ export default function DailyAttendancePage() {
                 </div>
             </div>
 
+            {/* Warning when not viewing today */}
+            {!isToday && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <h3 className="font-semibold text-amber-900 text-sm">Mode Hanya Lihat</h3>
+                        <p className="text-sm text-amber-700 mt-1">
+                            Anda sedang melihat data absensi untuk tanggal <strong>{new Date(selectedDate).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</strong>.
+                            Perubahan absensi hanya dapat dilakukan untuk hari ini.
+                        </p>
+                    </div>
+                </div>
+            )}
+
             {/* Statistics */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
@@ -139,9 +185,10 @@ export default function DailyAttendancePage() {
 
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-green-200">
                     <div className="flex items-center justify-between">
-                        <div>
+                        <div className="flex-1">
                             <p className="text-sm text-green-600">Hadir</p>
                             <p className="text-2xl font-bold text-green-700">{stats.hadir}</p>
+                            <p className="text-xs text-green-600 mt-1 font-semibold">{stats.hadirPercent}%</p>
                         </div>
                         <CheckCircle className="w-8 h-8 text-green-500" />
                     </div>
@@ -149,9 +196,10 @@ export default function DailyAttendancePage() {
 
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-yellow-200">
                     <div className="flex items-center justify-between">
-                        <div>
+                        <div className="flex-1">
                             <p className="text-sm text-yellow-600">Sakit</p>
                             <p className="text-2xl font-bold text-yellow-700">{stats.sakit}</p>
+                            <p className="text-xs text-yellow-600 mt-1 font-semibold">{stats.sakitPercent}%</p>
                         </div>
                         <AlertCircle className="w-8 h-8 text-yellow-500" />
                     </div>
@@ -159,9 +207,10 @@ export default function DailyAttendancePage() {
 
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-blue-200">
                     <div className="flex items-center justify-between">
-                        <div>
+                        <div className="flex-1">
                             <p className="text-sm text-blue-600">Izin</p>
                             <p className="text-2xl font-bold text-blue-700">{stats.izin}</p>
+                            <p className="text-xs text-blue-600 mt-1 font-semibold">{stats.izinPercent}%</p>
                         </div>
                         <AlertCircle className="w-8 h-8 text-blue-500" />
                     </div>
@@ -169,9 +218,10 @@ export default function DailyAttendancePage() {
 
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-red-200">
                     <div className="flex items-center justify-between">
-                        <div>
+                        <div className="flex-1">
                             <p className="text-sm text-red-600">Alpa</p>
                             <p className="text-2xl font-bold text-red-700">{stats.alpa}</p>
+                            <p className="text-xs text-red-600 mt-1 font-semibold">{stats.alpaPercent}%</p>
                         </div>
                         <XCircle className="w-8 h-8 text-red-500" />
                     </div>
@@ -179,11 +229,114 @@ export default function DailyAttendancePage() {
 
                 <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
                     <div className="flex items-center justify-between">
-                        <div>
+                        <div className="flex-1">
                             <p className="text-sm text-gray-600">Belum Absen</p>
                             <p className="text-2xl font-bold text-gray-700">{stats.belumAbsen}</p>
+                            <p className="text-xs text-gray-600 mt-1 font-semibold">{stats.belumAbsenPercent}%</p>
                         </div>
                         <Clock className="w-8 h-8 text-gray-400" />
+                    </div>
+                </div>
+            </div>
+
+            {/* Detail Presentasi */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-sm border border-blue-100 p-6">
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="p-3 bg-blue-500 rounded-lg">
+                        <CheckCircle className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-bold text-gray-800">Detail Presentasi Kehadiran</h2>
+                        <p className="text-sm text-gray-600">Ringkasan persentase absensi siswa hari ini</p>
+                    </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                    {/* Progress Kehadiran */}
+                    <div className="bg-white rounded-lg p-5 shadow-sm">
+                        <div className="flex justify-between items-center mb-3">
+                            <span className="text-sm font-semibold text-gray-700">Tingkat Kehadiran</span>
+                            <span className="text-2xl font-bold text-blue-600">{stats.sudahAbsenPercent}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                            <div
+                                className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500"
+                                style={{ width: `${stats.sudahAbsenPercent}%` }}
+                            />
+                        </div>
+                        <p className="text-xs text-gray-500 mt-2">
+                            {attendance.length} dari {stats.total} siswa sudah melakukan absensi
+                        </p>
+                    </div>
+
+                    {/* Breakdown Status */}
+                    <div className="bg-white rounded-lg p-5 shadow-sm">
+                        <h3 className="text-sm font-semibold text-gray-700 mb-3">Breakdown Status Kehadiran</h3>
+                        <div className="space-y-3">
+                            {/* Hadir */}
+                            <div>
+                                <div className="flex justify-between items-center mb-1">
+                                    <span className="text-xs text-green-700 font-medium flex items-center gap-1">
+                                        <CheckCircle className="w-3 h-3" /> Hadir
+                                    </span>
+                                    <span className="text-xs font-bold text-green-700">{stats.hadirPercent}%</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                        className="bg-green-500 h-2 rounded-full transition-all duration-500"
+                                        style={{ width: `${stats.hadirPercent}%` }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Sakit */}
+                            <div>
+                                <div className="flex justify-between items-center mb-1">
+                                    <span className="text-xs text-yellow-700 font-medium flex items-center gap-1">
+                                        <AlertCircle className="w-3 h-3" /> Sakit
+                                    </span>
+                                    <span className="text-xs font-bold text-yellow-700">{stats.sakitPercent}%</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                        className="bg-yellow-500 h-2 rounded-full transition-all duration-500"
+                                        style={{ width: `${stats.sakitPercent}%` }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Izin */}
+                            <div>
+                                <div className="flex justify-between items-center mb-1">
+                                    <span className="text-xs text-blue-700 font-medium flex items-center gap-1">
+                                        <AlertCircle className="w-3 h-3" /> Izin
+                                    </span>
+                                    <span className="text-xs font-bold text-blue-700">{stats.izinPercent}%</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                        className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                                        style={{ width: `${stats.izinPercent}%` }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Alpa */}
+                            <div>
+                                <div className="flex justify-between items-center mb-1">
+                                    <span className="text-xs text-red-700 font-medium flex items-center gap-1">
+                                        <XCircle className="w-3 h-3" /> Alpa
+                                    </span>
+                                    <span className="text-xs font-bold text-red-700">{stats.alpaPercent}%</span>
+                                </div>
+                                <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div
+                                        className="bg-red-500 h-2 rounded-full transition-all duration-500"
+                                        style={{ width: `${stats.alpaPercent}%` }}
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -199,6 +352,12 @@ export default function DailyAttendancePage() {
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Nama Siswa</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Kelas</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Jurusan</th>
+                                <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">
+                                    <div className="flex items-center justify-center gap-1">
+                                        <BarChart3 className="w-4 h-4" />
+                                        Statistik Kehadiran
+                                    </div>
+                                </th>
                                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">Waktu</th>
                                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
                             </tr>
@@ -206,14 +365,14 @@ export default function DailyAttendancePage() {
                         <tbody className="divide-y divide-gray-200">
                             {loading ? (
                                 <tr>
-                                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+                                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
                                         <RefreshCw className="w-8 h-8 mx-auto mb-2 animate-spin text-blue-500" />
                                         Memuat data...
                                     </td>
                                 </tr>
                             ) : students.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+                                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
                                         Belum ada data siswa
                                     </td>
                                 </tr>
@@ -221,6 +380,7 @@ export default function DailyAttendancePage() {
                                 students.map((student, index) => {
                                     const studentAttendance = getStudentAttendance(student.id);
                                     const currentStatus = studentAttendance?.status;
+                                    const studentStats = getStudentStats(student.id);
 
                                     return (
                                         <tr key={student.id} className="hover:bg-gray-50 transition-colors">
@@ -233,6 +393,26 @@ export default function DailyAttendancePage() {
                                                     {student.major}
                                                 </span>
                                             </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex justify-center gap-2 flex-wrap">
+                                                    <div className="flex items-center gap-1 px-2 py-1 bg-green-50 rounded border border-green-200" title="Total Hadir">
+                                                        <CheckCircle className="w-3 h-3 text-green-600" />
+                                                        <span className="text-xs font-semibold text-green-700">{studentStats.hadir}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1 px-2 py-1 bg-yellow-50 rounded border border-yellow-200" title="Total Sakit">
+                                                        <AlertCircle className="w-3 h-3 text-yellow-600" />
+                                                        <span className="text-xs font-semibold text-yellow-700">{studentStats.sakit}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1 px-2 py-1 bg-blue-50 rounded border border-blue-200" title="Total Izin">
+                                                        <AlertCircle className="w-3 h-3 text-blue-600" />
+                                                        <span className="text-xs font-semibold text-blue-700">{studentStats.izin}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1 px-2 py-1 bg-red-50 rounded border border-red-200" title="Total Alpa">
+                                                        <XCircle className="w-3 h-3 text-red-600" />
+                                                        <span className="text-xs font-semibold text-red-700">{studentStats.alpa}</span>
+                                                    </div>
+                                                </div>
+                                            </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-center text-gray-600">
                                                 {studentAttendance?.time || '-'}
                                             </td>
@@ -242,10 +422,12 @@ export default function DailyAttendancePage() {
                                                         <button
                                                             key={status}
                                                             onClick={() => handleStatusChange(student.id, status)}
-                                                            disabled={saving}
-                                                            className={`px-3 py-1 rounded-md text-xs font-semibold border transition-all disabled:opacity-50 ${currentStatus === status
-                                                                ? getStatusColor(status)
-                                                                : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+                                                            disabled={saving || !isToday}
+                                                            title={!isToday ? 'Hanya dapat mengubah absensi hari ini' : ''}
+                                                            className={`px-3 py-1 rounded-md text-xs font-semibold border transition-all ${!isToday ? 'cursor-not-allowed opacity-50' : ''
+                                                                } ${currentStatus === status
+                                                                    ? getStatusColor(status)
+                                                                    : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
                                                                 }`}
                                                         >
                                                             {status}

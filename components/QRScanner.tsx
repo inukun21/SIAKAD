@@ -20,6 +20,19 @@ export default function QRScanner({ onScanSuccess, onScanError }: QRScannerProps
 
         const initScanner = async () => {
             try {
+                // Check if we're in a browser environment
+                if (typeof window === 'undefined') {
+                    return; // Skip initialization during SSR
+                }
+
+                // Check if mediaDevices API is available
+                if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+                    const errorMsg = 'Kamera tidak tersedia. Pastikan Anda mengakses halaman melalui HTTPS atau localhost.';
+                    setError(errorMsg);
+                    if (onScanError) onScanError(errorMsg);
+                    return;
+                }
+
                 // Dynamic import to avoid SSR issues
                 const { BrowserMultiFormatReader } = await import('@zxing/browser');
                 codeReader = new BrowserMultiFormatReader();
